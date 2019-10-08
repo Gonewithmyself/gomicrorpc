@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/lpxxn/gomicrorpc/example1/proto"
+
+	"github.com/Gonewithmyself/gomicrorpc/example1/proto"
+
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-plugins/registry/etcdv3"
@@ -11,14 +13,18 @@ import (
 
 type Say struct{}
 
-func (s *Say) Hello(ctx context.Context, req *model.SayParam, rsp *model.SayResponse) error {
+var etdhosts = []string{
+	"http://localhost:32773", "http://localhost:32771", "http://localhost:32769",
+}
+
+func (s *Say) Hello(ctx context.Context, req *proto.SayParam, rsp *proto.SayResponse) error {
 	fmt.Println("received", req.Msg)
-	rsp.Header = make(map[string]*model.Pair)
-	rsp.Header["name"] = &model.Pair{Key: 1, Values: "abc"}
+	rsp.Header = make(map[string]*proto.Pair)
+	rsp.Header["name"] = &proto.Pair{Key: 1, Values: "abc"}
 
 	rsp.Msg = "hello world"
 	rsp.Values = append(rsp.Values, "a", "b")
-	rsp.Type = model.RespType_DESCEND
+	rsp.Type = proto.RespType_DESCEND
 
 	return nil
 }
@@ -26,9 +32,7 @@ func (s *Say) Hello(ctx context.Context, req *model.SayParam, rsp *model.SayResp
 func main() {
 	// 我这里用的etcd 做为服务发现
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{
-			"http://192.168.3.34:2379", "http://192.168.3.18:2379", "http://192.168.3.110:2379",
-		}
+		op.Addrs = etdhosts
 	})
 
 	// 初始化服务
@@ -48,7 +52,7 @@ func main() {
 	service.Init()
 
 	// 注册 Handler
-	model.RegisterSayHandler(service.Server(), new(Say))
+	proto.RegisterSayHandler(service.Server(), new(Say))
 
 	// run server
 	if err := service.Run(); err != nil {
