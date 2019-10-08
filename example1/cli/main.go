@@ -3,18 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/lpxxn/gomicrorpc/example1/proto"
+
+	"github.com/Gonewithmyself/gomicrorpc/example1/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-plugins/registry/etcdv3"
 )
 
+var etdhosts = []string{
+	"http://localhost:32773", "http://localhost:32771", "http://localhost:32769",
+}
+
 func main() {
 	// 我这里用的etcd 做为服务发现
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
-		op.Addrs = []string{
-			"http://192.168.3.34:2379", "http://192.168.3.18:2379", "http://192.168.3.110:2379",
-		}
+		op.Addrs = etdhosts
 	})
 
 	// 初始化服务
@@ -32,9 +35,9 @@ func main() {
 	*/
 	service.Init()
 
-	sayClent := model.NewSayService("lp.srv.eg1", service.Client())
+	sayClent := proto.NewSayService("lp.srv.eg1", service.Client())
 
-	rsp, err := sayClent.Hello(context.Background(), &model.SayParam{Msg: "hello server"})
+	rsp, err := sayClent.Hello(context.Background(), &proto.SayParam{Msg: "hello server"})
 	if err != nil {
 		panic(err)
 	}

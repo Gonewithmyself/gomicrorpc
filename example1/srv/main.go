@@ -40,15 +40,6 @@ func main() {
 		micro.Name("lp.srv.eg1"),
 		micro.Registry(reg),
 	)
-
-	// 2019年源码有变动默认使用的是mdns面不是consul了
-	// 如果你用的是默认的注册方式把上面的注释掉用下面的
-	/*
-		// 初始化服务
-		service := micro.NewService(
-			micro.Name("lp.srv.eg1"),
-		)
-	*/
 	service.Init()
 
 	// 注册 Handler
