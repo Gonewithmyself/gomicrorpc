@@ -10,12 +10,23 @@ import (
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-plugins/registry/etcdv3"
 )
+
+var etdhosts = []string{
+	"http://localhost:32773", "http://localhost:32771", "http://localhost:32769",
+}
 
 func main() {
 	// 初始化服务
+
+	reg := etcdv3.NewRegistry(func(op *registry.Options) {
+		op.Addrs = etdhosts
+	})
+
 	service := micro.NewService(
 		micro.Client(grpc.NewClient()),
+		micro.Registry(reg),
 	)
 	service.Init()
 	service.Options().Registry.Init(func(options *registry.Options) {
