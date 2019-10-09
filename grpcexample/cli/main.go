@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lpxxn/gomicrorpc/grpcexample/common"
-	model "github.com/lpxxn/gomicrorpc/grpcexample/proto"
+	"github.com/Gonewithmyself/gomicrorpc/grpcexample/common"
+	"github.com/Gonewithmyself/gomicrorpc/grpcexample/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-micro/registry"
@@ -22,9 +22,9 @@ func main() {
 		options.Timeout = time.Second * 2
 	})
 
-	sayClent := model.NewSayService(common.GrpcExampleName, service.Client())
+	sayClent := proto.NewSayService(common.GrpcExampleName, service.Client())
 
-	rsp, err := sayClent.Hello(context.Background(), &model.SayParam{Msg: "hello server"})
+	rsp, err := sayClent.Hello(context.Background(), &proto.SayParam{Msg: "hello server"})
 	if err != nil {
 		panic(err)
 	}

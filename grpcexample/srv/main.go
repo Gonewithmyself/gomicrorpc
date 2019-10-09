@@ -4,22 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lpxxn/gomicrorpc/grpcexample/common"
-	model "github.com/lpxxn/gomicrorpc/grpcexample/proto"
+	"github.com/Gonewithmyself/gomicrorpc/grpcexample/common"
+	"github.com/Gonewithmyself/gomicrorpc/grpcexample/proto"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/server/grpc"
 )
 
 type Say struct{}
 
-func (s *Say) Hello(ctx context.Context, req *model.SayParam, rsp *model.SayResponse) error {
+func (s *Say) Hello(ctx context.Context, req *proto.SayParam, rsp *proto.SayResponse) error {
 	fmt.Println("received", req.Msg)
-	rsp.Header = make(map[string]*model.Pair)
-	rsp.Header["name"] = &model.Pair{Key: 1, Values: "abc"}
+	rsp.Header = make(map[string]*proto.Pair)
+	rsp.Header["name"] = &proto.Pair{Key: 1, Values: "abc"}
 
 	rsp.Msg = "hello world"
 	rsp.Values = append(rsp.Values, "a", "b")
-	rsp.Type = model.RespType_DESCEND
+	rsp.Type = proto.RespType_DESCEND
 
 	return nil
 }
@@ -34,7 +34,7 @@ func main() {
 	service.Init()
 
 	// 注册 Handler
-	if err := model.RegisterSayHandler(service.Server(), new(Say)); err != nil {
+	if err := proto.RegisterSayHandler(service.Server(), new(Say)); err != nil {
 		panic(err)
 	}
 

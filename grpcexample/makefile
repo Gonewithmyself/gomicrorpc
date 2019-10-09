@@ -9,7 +9,7 @@ clean:
 	cd ${pbdir} && rm -rf *.go
 
 g:
-	cd ${pbdir}/pb &&  protoc  --micro_out=../ --go_out=../ *.proto 
+	cd ${pbdir} &&  protoc  --micro_out=. --go_out=. *.proto 
 
 srv: g
 	cd srv && go build -o ../s
