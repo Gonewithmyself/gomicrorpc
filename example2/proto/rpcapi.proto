@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package proto;
+import "common.proto";
+
+// 服务接口
+service Say {
+    rpc Hello(SayParam) returns (SayResponse) {}
+    rpc MyName(SayParam) returns (SayParam) {}
+    rpc Stream(SRequest) returns (stream SResponse) {}
+    rpc BidirectionalStream(stream SRequest) returns (stream SResponse) {}
+}

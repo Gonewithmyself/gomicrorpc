@@ -3,30 +3,30 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/lpxxn/gomicrorpc/example2/lib"
-	"github.com/lpxxn/gomicrorpc/example2/proto/model"
-	"github.com/lpxxn/gomicrorpc/example2/proto/rpcapi"
 	"io"
 	"time"
+
+	"github.com/Gonewithmyself/gomicrorpc/example2/lib"
+	"github.com/Gonewithmyself/gomicrorpc/example2/proto"
 )
 
 type Say struct{}
 
-var _ rpcapi.SayHandler = (*Say)(nil)
+var _ proto.SayHandler = (*Say)(nil)
 
-func (s *Say) Hello(ctx context.Context, req *model.SayParam, rsp *model.SayResponse) error {
+func (s *Say) Hello(ctx context.Context, req *proto.SayParam, rsp *proto.SayResponse) error {
 	fmt.Println("received", req.Msg)
-	rsp.Header = make(map[string]*model.Pair)
-	rsp.Header["name"] = &model.Pair{Key: 1, Values: "abc"}
+	rsp.Header = make(map[string]*proto.Pair)
+	rsp.Header["name"] = &proto.Pair{Key: 1, Values: "abc"}
 
 	rsp.Msg = "hello world"
 	rsp.Values = append(rsp.Values, "a", "b")
-	rsp.Type = model.RespType_DESCEND
+	rsp.Type = proto.RespType_DESCEND
 
 	return nil
 }
 
-func (s *Say) MyName(ctx context.Context, req *model.SayParam, rsp *model.SayParam) error {
+func (s *Say) MyName(ctx context.Context, req *proto.SayParam, rsp *proto.SayParam) error {
 	rsp.Msg = "lp"
 	return nil
 }
@@ -34,10 +34,10 @@ func (s *Say) MyName(ctx context.Context, req *model.SayParam, rsp *model.SayPar
 /*
  模拟得到一些数据
 */
-func (s *Say) Stream(ctx context.Context, req *model.SRequest, stream rpcapi.Say_StreamStream) error {
+func (s *Say) Stream(ctx context.Context, req *proto.SRequest, stream proto.Say_StreamStream) error {
 
 	for i := 0; i < int(req.Count); i++ {
-		rsp := &model.SResponse{}
+		rsp := &proto.SResponse{}
 		for j := lib.Random(3, 5); j < 10; j++ {
 			rsp.Value = append(rsp.Value, lib.RandomStr(lib.Random(3, 10)))
 		}
@@ -53,7 +53,7 @@ func (s *Say) Stream(ctx context.Context, req *model.SRequest, stream rpcapi.Say
 /*
  模拟数据
 */
-func (s *Say) BidirectionalStream(ctx context.Context, stream rpcapi.Say_BidirectionalStreamStream) error {
+func (s *Say) BidirectionalStream(ctx context.Context, stream proto.Say_BidirectionalStreamStream) error {
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -63,7 +63,7 @@ func (s *Say) BidirectionalStream(ctx context.Context, stream rpcapi.Say_Bidirec
 			fmt.Println(err)
 		}
 		fmt.Println(req.Count)
-		if err := stream.Send(&model.SResponse{Value: []string{lib.RandomStr(lib.Random(3, 6))}}); err != nil {
+		if err := stream.Send(&proto.SResponse{Value: []string{lib.RandomStr(lib.Random(3, 6))}}); err != nil {
 			return err
 		}
 	}
